@@ -1,4 +1,4 @@
-# Fossia Project Summary
+# LibreFind Project Summary
 
 ## 📊 Implementation Statistics
 
@@ -51,7 +51,7 @@ app/src/main/java/com/jksalcedo/fossia/
 │
 └── ui/                                    # 🎨 User Interface
     ├── theme/
-    │   ├── Color.kt                       # Fossia color palette
+    │   ├── Color.kt                       # LibreFind color palette
     │   ├── Theme.kt                       # Material3 theme
     │   └── Type.kt                        # Typography
     ├── navigation/
@@ -169,7 +169,7 @@ Follow the guide in [FIREBASE_SETUP.md](file:///home/arch-jk/AndroidStudioProjec
 ./gradlew installDebug
 
 # Grant permission manually
-# Settings → Apps → Special access → All files access → Fossia
+# Settings → Apps → Special access → All files access → LibreFind
 ```
 
 ### 3. Populate Database

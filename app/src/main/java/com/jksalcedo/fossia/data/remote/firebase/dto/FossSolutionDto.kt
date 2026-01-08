@@ -1,6 +1,6 @@
 package com.jksalcedo.fossia.data.remote.firebase.dto
 
-import com.google.gson.annotations.SerializedName
+import com.google.firebase.firestore.PropertyName
 import com.jksalcedo.fossia.domain.model.Alternative
 
 /**
@@ -15,29 +15,29 @@ import com.jksalcedo.fossia.domain.model.Alternative
  * - votes: Map of vote categories to counts
  */
 data class FossSolutionDto(
-    @SerializedName("name")
-    val name: String = "",
+    @get:PropertyName("name") @set:PropertyName("name")
+    var name: String = "",
     
-    @SerializedName("license")
-    val license: String = "",
+    @get:PropertyName("license") @set:PropertyName("license")
+    var license: String = "",
     
-    @SerializedName("repo_url")
-    val repoUrl: String = "",
+    @get:PropertyName("repo_url") @set:PropertyName("repo_url")
+    var repoUrl: String = "",
     
-    @SerializedName("fdroid_id")
-    val fdroidId: String = "",
+    @get:PropertyName("fdroid_id") @set:PropertyName("fdroid_id")
+    var fdroidId: String = "",
     
-    @SerializedName("icon_url")
-    val iconUrl: String? = null,
+    @get:PropertyName("icon_url") @set:PropertyName("icon_url")
+    var iconUrl: String? = null,
     
-    @SerializedName("package_name")
-    val packageName: String = "",
+    @get:PropertyName("package_name") @set:PropertyName("package_name")
+    var packageName: String = "",
     
-    @SerializedName("description")
-    val description: String = "",
+    @get:PropertyName("description") @set:PropertyName("description")
+    var description: String = "",
     
-    @SerializedName("votes")
-    val votes: Map<String, Int> = emptyMap()
+    @get:PropertyName("votes") @set:PropertyName("votes")
+    var votes: Map<String, Int> = emptyMap()
 ) {
     /**
      * Convert DTO to domain model

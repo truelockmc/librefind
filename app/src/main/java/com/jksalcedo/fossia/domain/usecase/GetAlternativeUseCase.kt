@@ -2,14 +2,13 @@ package com.jksalcedo.fossia.domain.usecase
 
 import com.jksalcedo.fossia.domain.model.Alternative
 import com.jksalcedo.fossia.domain.repository.KnowledgeGraphRepo
-import javax.inject.Inject
 
 /**
  * Use case: Get FOSS alternatives for a proprietary app
  * 
  * Fetches and returns alternatives sorted by community score.
  */
-class GetAlternativeUseCase @Inject constructor(
+class GetAlternativeUseCase(
     private val knowledgeGraphRepo: KnowledgeGraphRepo
 ) {
     /**

@@ -3,7 +3,6 @@ package com.jksalcedo.fossia.domain.usecase
 import com.jksalcedo.fossia.domain.model.AppItem
 import com.jksalcedo.fossia.domain.repository.DeviceInventoryRepo
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
 /**
  * Use case: Scan device inventory and classify apps
@@ -15,7 +14,7 @@ import javax.inject.Inject
  * 
  * This is the primary use case for the Dashboard screen.
  */
-class ScanInventoryUseCase @Inject constructor(
+class ScanInventoryUseCase(
     private val deviceInventoryRepo: DeviceInventoryRepo
 ) {
     /**
@@ -23,7 +22,6 @@ class ScanInventoryUseCase @Inject constructor(
      * 
      * @return Flow emitting the classified and sorted app list
      */
-    suspend operator fun invoke(): Flow<List<AppItem>> {
-        return deviceInventoryRepo.scanAndClassify()
-    }
+    suspend operator fun invoke(): Flow<List<AppItem>> =
+        deviceInventoryRepo.scanAndClassify()
 }

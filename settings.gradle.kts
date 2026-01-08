@@ -19,5 +19,14 @@ dependencyResolutionManagement {
     }
 }
 
+
+gradle.beforeProject {
+    configurations.configureEach {
+        resolutionStrategy {
+            force("com.squareup:javapoet:1.13.0")
+        }
+    }
+}
+
 rootProject.name = "Fossia"
 include(":app")

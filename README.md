@@ -1,8 +1,8 @@
 
 
-## What is Fossia?
+## What is LibreFind?
 
-Fossia is an Android app that scans your device, identifies proprietary software, and recommends Free and Open Source Software (FOSS) alternatives. It uses **semantic web federation** (Wikidata + Firebase) instead of maintaining a centralized proprietary database.
+LibreFind is an Android app that scans your device, identifies proprietary software, and recommends Free and Open Source Software (FOSS) alternatives. It uses **semantic web federation** (Wikidata + Firebase) instead of maintaining a centralized proprietary database.
 
 ### Core Mission
 Help users replace proprietary apps with FOSS alternatives.

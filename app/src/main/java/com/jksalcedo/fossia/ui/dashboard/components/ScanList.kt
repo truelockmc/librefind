@@ -24,13 +24,21 @@ import com.jksalcedo.fossia.ui.common.StatusBadge
 fun ScanList(
     apps: List<AppItem>,
     onAppClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    headerContent: (@Composable () -> Unit)? = null
 ) {
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        if (headerContent != null) {
+            item {
+                headerContent()
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+
         items(apps, key = { it.packageName }) { app ->
             AppRow(
                 app = app,

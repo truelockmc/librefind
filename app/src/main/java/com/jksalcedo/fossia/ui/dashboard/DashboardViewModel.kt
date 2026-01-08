@@ -5,37 +5,38 @@ import androidx.lifecycle.viewModelScope
 import com.jksalcedo.fossia.domain.model.AppItem
 import com.jksalcedo.fossia.domain.model.SovereigntyScore
 import com.jksalcedo.fossia.domain.usecase.ScanInventoryUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel for Dashboard screen
  * 
  * Manages app scanning state and sovereignty score calculation
  */
-@HiltViewModel
-class DashboardViewModel @Inject constructor(
+class DashboardViewModel(
     private val scanInventoryUseCase: ScanInventoryUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DashboardState())
     val state: StateFlow<DashboardState> = _state.asStateFlow()
 
-    init {
-        scan()
-    }
+    private val refreshTrigger = MutableSharedFlow<Unit>(replay = 1)
 
-    fun scan() {
+    init {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-            
-            try {
-                scanInventoryUseCase().collect { apps ->
+            refreshTrigger
+                .onStart { emit(Unit) } // Trigger initial scan
+                .flatMapLatest {
+                    _state.update { it.copy(isLoading = true, error = null) }
+                    scanInventoryUseCase()
+                }
+                .collect { apps ->
                     val score = calculateScore(apps)
                     _state.update {
                         it.copy(
@@ -46,14 +47,12 @@ class DashboardViewModel @Inject constructor(
                         )
                     }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.message ?: "Unknown error occurred"
-                    )
-                }
-            }
+        }
+    }
+
+    fun scan() {
+        viewModelScope.launch {
+            refreshTrigger.emit(Unit)
         }
     }
 

@@ -14,6 +14,7 @@ import com.jksalcedo.fossia.ui.theme.FossGreen
 import com.jksalcedo.fossia.ui.theme.PropRed
 import com.jksalcedo.fossia.ui.theme.UnknownGray
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Visual status badge component
@@ -44,4 +45,10 @@ fun StatusBadge(
             fontWeight = FontWeight.Bold
         )
     }
+}
+
+@Composable
+@Preview
+fun StatusBadgePreview() {
+    StatusBadge(status = AppStatus.FOSS)
 }

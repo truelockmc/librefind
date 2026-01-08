@@ -1,11 +1,7 @@
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
-import org.jetbrains.kotlin.config.JvmTarget
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
 }
@@ -13,9 +9,7 @@ plugins {
 
 android {
     namespace = "com.jksalcedo.fossia"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.jksalcedo.fossia"
@@ -42,7 +36,7 @@ android {
     }
     kotlin {
         compilerOptions {
-            org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("11")
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         }
     }
     buildFeatures {
@@ -63,15 +57,16 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
+    implementation(libs.androidx.compose.material.icons.extended)
     
-    // Hilt (Dependency Injection)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
+    // Koin (Dependency Injection)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     
     // Room (Local Database)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.androidx.compose.foundation)
     ksp(libs.room.compiler)
     
     // Retrofit & OkHttp (Networking)
@@ -83,8 +78,8 @@ dependencies {
     
     // Firebase
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
     
     // Navigation
     implementation(libs.navigation.compose)

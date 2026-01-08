@@ -1,14 +1,23 @@
 package com.jksalcedo.fossia
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.jksalcedo.fossia.di.appModule
+import com.jksalcedo.fossia.di.networkModule
+import com.jksalcedo.fossia.di.repositoryModule
+import com.jksalcedo.fossia.di.useCaseModule
+import com.jksalcedo.fossia.di.viewModelModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
-/**
- * Fossia Application Entry Point
- * 
- * Annotated with @HiltAndroidApp to trigger Hilt's code generation,
- * including a base class for the application that serves as the
- * application-level dependency container.
- */
-@HiltAndroidApp
-class FossiaApp : Application()
+class FossiaApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        startKoin {
+            androidLogger()
+            androidContext(this@FossiaApp)
+            modules(appModule, networkModule, repositoryModule, useCaseModule, viewModelModule)
+        }
+    }
+}

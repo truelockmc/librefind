@@ -4,17 +4,22 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.jksalcedo.fossia.data.remote.firebase.dto.FossSolutionDto
 import com.jksalcedo.fossia.data.remote.firebase.dto.ProprietaryTargetDto
 import com.jksalcedo.fossia.domain.model.Alternative
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Firebase Firestore service for knowledge graph operations
  * 
  * Handles all Firestore queries and mutations.
  */
-@Singleton
-class FirestoreService @Inject constructor(
+/**
+ * Firebase Firestore service for knowledge graph operations
+ * 
+ * Handles all Firestore queries and mutations.
+ */
+class FirestoreService(
     private val firestore: FirebaseFirestore
 ) {
     companion object {
@@ -61,11 +66,13 @@ class FirestoreService @Inject constructor(
             
             val target = doc.toObject(ProprietaryTargetDto::class.java) ?: return emptyList()
             
-            // Fetch each alternative
-            target.alternatives.mapNotNull { altId ->
-                fetchFossSolution(altId)
+            // Fetch each alternative in parallel
+            coroutineScope {
+                target.alternatives.map { altId ->
+                    async { fetchFossSolution(altId) }
+                }.awaitAll().filterNotNull()
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }

@@ -1,7 +1,6 @@
 package com.jksalcedo.fossia.data.local
 
-import javax.inject.Inject
-import javax.inject.Singleton
+
 
 /**
  * Database of known FOSS signing certificates
@@ -12,8 +11,16 @@ import javax.inject.Singleton
  * In a production version, this would be a JSON file or Room database.
  * For MVP, we'll hardcode a few critical entries.
  */
-@Singleton
-class SafeSignatureDb @Inject constructor() {
+/**
+ * Database of known FOSS signing certificates
+ * 
+ * This allows detection of FOSS apps distributed via Play Store.
+ * For example, Signal and Firefox are on the Play Store but are FOSS.
+ * 
+ * In a production version, this would be a JSON file or Room database.
+ * For MVP, we'll hardcode a few critical entries.
+ */
+class SafeSignatureDb {
     
     /**
      * Map of package names to their known FOSS certificate hashes

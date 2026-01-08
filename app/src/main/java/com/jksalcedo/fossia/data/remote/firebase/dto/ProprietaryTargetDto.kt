@@ -1,6 +1,6 @@
 package com.jksalcedo.fossia.data.remote.firebase.dto
 
-import com.google.gson.annotations.SerializedName
+import com.google.firebase.firestore.PropertyName
 
 /**
  * Data Transfer Object for Firestore "proprietary_targets" collection
@@ -13,18 +13,18 @@ import com.google.gson.annotations.SerializedName
  * - alternatives: Array of alternative IDs
  */
 data class ProprietaryTargetDto(
-    @SerializedName("name")
-    val name: String = "",
+    @get:PropertyName("name") @set:PropertyName("name")
+    var name: String = "",
     
-    @SerializedName("icon")
-    val icon: String = "",
+    @get:PropertyName("icon") @set:PropertyName("icon")
+    var icon: String = "",
     
-    @SerializedName("category")
-    val category: String = "",
+    @get:PropertyName("category") @set:PropertyName("category")
+    var category: String = "",
     
-    @SerializedName("alternatives")
-    val alternatives: List<String> = emptyList(),
+    @get:PropertyName("alternatives") @set:PropertyName("alternatives")
+    var alternatives: List<String> = emptyList(),
     
-    @SerializedName("package_name")
-    val packageName: String = ""
+    @get:PropertyName("package_name") @set:PropertyName("package_name")
+    var packageName: String = ""
 )

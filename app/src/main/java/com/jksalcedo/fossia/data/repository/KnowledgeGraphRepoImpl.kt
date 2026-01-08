@@ -3,8 +3,6 @@ package com.jksalcedo.fossia.data.repository
 import com.jksalcedo.fossia.data.remote.firebase.FirestoreService
 import com.jksalcedo.fossia.domain.model.Alternative
 import com.jksalcedo.fossia.domain.repository.KnowledgeGraphRepo
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of KnowledgeGraphRepo
@@ -12,8 +10,13 @@ import javax.inject.Singleton
  * Currently uses Firebase Firestore as the primary knowledge source.
  * In future iterations, this could integrate Wikidata SPARQL queries.
  */
-@Singleton
-class KnowledgeGraphRepoImpl @Inject constructor(
+/**
+ * Implementation of KnowledgeGraphRepo
+ * 
+ * Currently uses Firebase Firestore as the primary knowledge source.
+ * In future iterations, this could integrate Wikidata SPARQL queries.
+ */
+class KnowledgeGraphRepoImpl(
     private val firestoreService: FirestoreService
 ) : KnowledgeGraphRepo {
 

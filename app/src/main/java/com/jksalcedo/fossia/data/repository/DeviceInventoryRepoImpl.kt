@@ -8,11 +8,12 @@ import com.jksalcedo.fossia.domain.model.AppStatus
 import com.jksalcedo.fossia.domain.repository.DeviceInventoryRepo
 import com.jksalcedo.fossia.domain.repository.KnowledgeGraphRepo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of DeviceInventoryRepo
@@ -22,8 +23,15 @@ import javax.inject.Singleton
  * B. Signature Check (Verification)
  * C. Database Query (Fossia Cloud)
  */
-@Singleton
-class DeviceInventoryRepoImpl @Inject constructor(
+/**
+ * Implementation of DeviceInventoryRepo
+ * 
+ * Implements the three-step classification logic:
+ * A. Source Check (Fast Filter)
+ * B. Signature Check (Verification)
+ * C. Database Query (Fossia Cloud)
+ */
+class DeviceInventoryRepoImpl(
     private val localSource: InventorySource,
     private val signatureDb: SafeSignatureDb,
     private val knowledgeRepo: KnowledgeGraphRepo
@@ -37,8 +45,10 @@ class DeviceInventoryRepoImpl @Inject constructor(
     override suspend fun scanAndClassify(): Flow<List<AppItem>> = flow {
         val rawApps = localSource.getRawApps()
         
-        val classifiedApps = rawApps.map { pkg ->
-            classifyApp(pkg)
+        val classifiedApps = coroutineScope {
+            rawApps.map { pkg ->
+                async { classifyApp(pkg) }
+            }.awaitAll()
         }
         
         // Sort by classification priority (PROP > UNKN > FOSS)

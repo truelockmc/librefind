@@ -5,9 +5,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Local data source for device app inventory
@@ -15,9 +12,8 @@ import javax.inject.Singleton
  * Wraps Android PackageManager API to extract installed packages.
  * This is the "Eyes" of the detection system.
  */
-@Singleton
-class InventorySource @Inject constructor(
-    @ApplicationContext private val context: Context
+class InventorySource(
+    private val context: Context
 ) {
     /**
      * Gets all user-installed apps
@@ -34,8 +30,8 @@ class InventorySource @Inject constructor(
                 .getInstalledPackages(PackageManager.GET_META_DATA)
                 .filter { app ->
                     // Filter logic: User apps + Updated System Apps only
-                    (app.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0) ||
-                    (app.applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP != 0)
+                    (app.applicationInfo?.flags?.and(ApplicationInfo.FLAG_SYSTEM) == 0) ||
+                    (app.applicationInfo?.flags?.and(ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0)
                 }
         } catch (e: Exception) {
             emptyList()

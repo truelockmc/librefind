@@ -1,5 +1,6 @@
 package com.jksalcedo.fossia.ui.dashboard.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -7,8 +8,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.jksalcedo.fossia.domain.model.SovereigntyLevel
 import com.jksalcedo.fossia.domain.model.SovereigntyScore
 import com.jksalcedo.fossia.ui.theme.CapturedOrange
@@ -22,58 +27,63 @@ import com.jksalcedo.fossia.ui.theme.TransitionBlue
 @Composable
 fun SovereigntyGauge(
     score: SovereigntyScore,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(200.dp)
-        ) {
-            // Background circle
-            CircularProgressIndicator(
-                progress = { 1f },
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                strokeWidth = 12.dp
+            modifier = Modifier.size(150.dp).clickable(
+                interactionSource = null,
+                indication = null,
+                onClick = {
+                    onClick()
+                }
             )
-            
-            // Progress circle
+        ) {
             CircularProgressIndicator(
                 progress = { score.fossPercentage / 100f },
                 modifier = Modifier.fillMaxSize(),
                 color = getLevelColor(score.level),
-                strokeWidth = 12.dp
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                strokeWidth = 12.dp,
+                strokeCap = StrokeCap.Round,
             )
-            
-            // Center text
+
+            // Center Text
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                   text = "${score.fossPercentage.toInt()}%",
-                    style = MaterialTheme.typography.displayLarge,
+                    text = "${score.fossPercentage.toInt()}%",
+                    style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold,
                     color = getLevelColor(score.level)
                 )
                 Text(
                     text = getLevelText(score.level),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
-        
-        // Stats
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+
+        Spacer(modifier = Modifier.width(24.dp))
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .height(140.dp),
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             StatItem(label = "FOSS", count = score.fossCount, color = FossGreen)
-            StatItem(label = "PROP", count = score.proprietaryCount, color = CapturedOrange)
+            StatItem(label = "PROPRIETARY", count = score.proprietaryCount, color = CapturedOrange)
             StatItem(label = "Unknown", count = score.unknownCount, color = MaterialTheme.colorScheme.outline)
         }
     }
@@ -83,26 +93,29 @@ fun SovereigntyGauge(
 private fun StatItem(
     label: String,
     count: Int,
-    color: androidx.compose.ui.graphics.Color
+    color: Color
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = count.toString(),
-            style = MaterialTheme.typography.headlineMedium,
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
-            color = color
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            text = count.toString(),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            color = color
         )
     }
 }
 
-private fun getLevelColor(level: SovereigntyLevel): androidx.compose.ui.graphics.Color {
+private fun getLevelColor(level: SovereigntyLevel): Color {
     return when (level) {
         SovereigntyLevel.SOVEREIGN -> SovereignGold
         SovereigntyLevel.TRANSITIONING -> TransitionBlue
@@ -115,5 +128,21 @@ private fun getLevelText(level: SovereigntyLevel): String {
         SovereigntyLevel.SOVEREIGN -> "Sovereign"
         SovereigntyLevel.TRANSITIONING -> "Transitioning"
         SovereigntyLevel.CAPTURED -> "Captured"
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSovereigntyGauge() {
+    // Mock Data
+    val mockScore = SovereigntyScore(
+        totalApps = 100,
+        fossCount = 45,
+        proprietaryCount = 45,
+        unknownCount = 10
+    )
+
+    MaterialTheme {
+        SovereigntyGauge(score = mockScore) {}
     }
 }

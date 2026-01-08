@@ -2,15 +2,40 @@ package com.jksalcedo.fossia.ui.details
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.layout.*
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -18,8 +43,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.jksalcedo.fossia.domain.model.Alternative
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Details screen showing FOSS alternatives
@@ -29,10 +54,14 @@ import com.jksalcedo.fossia.domain.model.Alternative
 fun DetailsScreen(
     packageName: String,
     onBackClick: () -> Unit,
-    viewModel: DetailsViewModel = hiltViewModel()
+    viewModel: DetailsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+
+    LaunchedEffect(packageName) {
+        viewModel.loadAlternatives(packageName)
+    }
 
     Scaffold(
         topBar = {
@@ -60,7 +89,7 @@ fun DetailsScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                
+
                 state.error != null -> {
                     Column(
                         modifier = Modifier
@@ -82,12 +111,12 @@ fun DetailsScreen(
                             color = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { viewModel.retry() }) {
+                        Button(onClick = { viewModel.retry(packageName) }) {
                             Text("Retry")
                         }
                     }
                 }
-                
+
                 state.alternatives.isEmpty() -> {
                     Column(
                         modifier = Modifier
@@ -116,7 +145,7 @@ fun DetailsScreen(
                         )
                     }
                 }
-                
+
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -131,15 +160,26 @@ fun DetailsScreen(
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
-                        
+
                         items(state.alternatives) { alternative ->
                             AlternativeCard(
                                 alternative = alternative,
                                 onViewInFdroid = {
-                                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        data = Uri.parse("https://f-droid.org/packages/${alternative.fdroidId}")
+                                    val fdroidUri =
+                                        Uri.parse("market://details?id=${alternative.fdroidId}")
+                                    val webUri =
+                                        Uri.parse("https://f-droid.org/packages/${alternative.fdroidId}/")
+
+                                    try {
+                                        val intent = Intent(Intent.ACTION_VIEW, fdroidUri)
+                                        intent.setPackage("com.fdroid.fdroid")
+                                        context.startActivity(intent)
+                                    } catch (_: Exception) {
+                                        // Fallback
+                                        val intent = Intent(Intent.ACTION_VIEW, webUri)
+                                        context.startActivity(intent)
                                     }
-                                    context.startActivity(intent)
+                                    Log.d("DETAILS SCREEN", alternative.fdroidId)
                                 },
                                 onViewSource = {
                                     val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -187,7 +227,7 @@ fun AlternativeCard(
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -205,7 +245,7 @@ fun AlternativeCard(
                     )
                 }
             }
-            
+
             if (alternative.description.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -214,9 +254,9 @@ fun AlternativeCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
