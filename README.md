@@ -37,6 +37,8 @@ Help users replace proprietary apps with FOSS alternatives.
 - Admin/Reviewers verify submissions
 - Community voting system
 
+![Telegram](https://t.me/librefind) 
+
 ## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE)
