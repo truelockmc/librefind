@@ -39,6 +39,7 @@ Help users replace proprietary apps with FOSS alternatives.
 - Admin/Reviewers verify submissions
 - Community voting system
 
+Please jin telegram channel for further discussions.
 [Telegram](https://t.me/librefind) 
 
 ## License
