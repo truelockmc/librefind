@@ -18,6 +18,8 @@ Free and Open Source Software (FOSS) alternatives. It uses **Firebase Firestore*
 knowledge
 base for proprietary app detection and FOSS alternative recommendations.
 
+> Note: Firebase is used for MVP only. 
+
 ### Core Mission
 
 Help users replace proprietary apps with FOSS alternatives.
