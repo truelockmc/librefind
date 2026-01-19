@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -32,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jksalcedo.librefind.ui.auth.AuthViewModel
 import com.jksalcedo.librefind.ui.dashboard.components.GaugeDetailsDialog
 import com.jksalcedo.librefind.ui.dashboard.components.ScanList
 import com.jksalcedo.librefind.ui.dashboard.components.SovereigntyGauge
@@ -42,10 +46,14 @@ import org.koin.androidx.compose.koinViewModel
 fun DashboardScreen(
     onAppClick: (String, String) -> Unit,
     onSubmitClick: () -> Unit = {},
-    viewModel: DashboardViewModel = koinViewModel()
+    onMySubmissionsClick: () -> Unit = {},
+    viewModel: DashboardViewModel = koinViewModel(),
+    authViewModel: AuthViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val authState by authViewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var showProfileDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -57,6 +65,12 @@ fun DashboardScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = { showProfileDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Profile"
+                        )
+                    }
                     IconButton(onClick = { viewModel.scan() }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
@@ -150,12 +164,71 @@ fun DashboardScreen(
                     }
                 }
             }
-            
+
             if (showDialog) {
                 state.sovereigntyScore?.let { score ->
                     GaugeDetailsDialog(
                         score = score,
                         onDismissRequest = { showDialog = false }
+                    )
+                }
+            }
+
+            if (showProfileDialog) {
+                if (authState.isSignedIn && authState.userProfile != null) {
+                    AlertDialog(
+                        onDismissRequest = { showProfileDialog = false },
+                        title = { Text("Profile") },
+                        text = {
+                            Column {
+                                Text(
+                                    text = authState.userProfile?.username ?: "",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = authState.userProfile?.email ?: "",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showProfileDialog = false
+                                    onMySubmissionsClick()
+                                }
+                            ) {
+                                Text("My Submissions")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showProfileDialog = false }) {
+                                Text("Close")
+                            }
+                        }
+                    )
+                } else {
+                    AlertDialog(
+                        onDismissRequest = { showProfileDialog = false },
+                        title = { Text("Not Signed In") },
+                        text = { Text("Please sign in to view your profile.") },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showProfileDialog = false
+                                    onSubmitClick() // Redirect to Auth/Submit flow which handles login
+                                }
+                            ) {
+                                Text("Sign In")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showProfileDialog = false }) {
+                                Text("Close")
+                            }
+                        }
                     )
                 }
             }
@@ -167,7 +240,8 @@ fun DashboardScreen(
 @Composable
 fun PreviewDashboard() {
     DashboardScreen(
-        onAppClick = {_, _ -> },
-        viewModel = koinViewModel()
+        onAppClick = { _, _ -> },
+        viewModel = koinViewModel(),
+        authViewModel = koinViewModel()
     )
 }

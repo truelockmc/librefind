@@ -2,15 +2,16 @@ package com.jksalcedo.librefind.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import androidx.navigation.NavType
 import com.jksalcedo.librefind.ui.auth.AuthScreen
 import com.jksalcedo.librefind.ui.auth.ProfileSetupScreen
 import com.jksalcedo.librefind.ui.dashboard.DashboardScreen
 import com.jksalcedo.librefind.ui.details.AlternativeDetailScreen
 import com.jksalcedo.librefind.ui.details.DetailsScreen
+import com.jksalcedo.librefind.ui.mysubmissions.MySubmissionsScreen
 import com.jksalcedo.librefind.ui.submit.SubmitScreen
 
 @Composable
@@ -28,6 +29,9 @@ fun NavGraph(
                 },
                 onSubmitClick = {
                     navController.navigate(Route.Auth.route)
+                },
+                onMySubmissionsClick = {
+                    navController.navigate(Route.MySubmissions.route)
                 }
             )
         }
@@ -36,9 +40,10 @@ fun NavGraph(
             route = Route.Details.route,
             arguments = listOf(
                 navArgument("packageName") { type = NavType.StringType },
-                navArgument("appName") {type = NavType.StringType})
+                navArgument("appName") { type = NavType.StringType })
         ) { backStackEntry ->
-            val packageName = backStackEntry.arguments?.getString("packageName") ?: return@composable
+            val packageName =
+                backStackEntry.arguments?.getString("packageName") ?: return@composable
             val appName = backStackEntry.arguments?.getString("appName") ?: return@composable
             DetailsScreen(
                 appName = appName,
@@ -95,6 +100,12 @@ fun NavGraph(
                         popUpTo(Route.Dashboard.route) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(Route.MySubmissions.route) {
+            MySubmissionsScreen(
+                onBackClick = { navController.navigateUp() }
             )
         }
     }

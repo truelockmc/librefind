@@ -11,6 +11,7 @@ sealed class Route(val route: String) {
     data object Auth : Route("auth")
     data object ProfileSetup : Route("profile_setup")
     data object Submit : Route("submit")
+    data object MySubmissions : Route("my_submissions")
 }
 
 

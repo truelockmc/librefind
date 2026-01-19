@@ -2,6 +2,7 @@ package com.jksalcedo.librefind.data.repository
 
 import com.jksalcedo.librefind.data.remote.firebase.FirestoreService
 import com.jksalcedo.librefind.domain.model.Alternative
+import com.jksalcedo.librefind.domain.model.Submission
 import com.jksalcedo.librefind.domain.repository.KnowledgeGraphRepo
 
 class KnowledgeGraphRepoImpl(
@@ -38,6 +39,10 @@ class KnowledgeGraphRepoImpl(
             category = category,
             userId = userId
         )
+    }
+
+    override suspend fun getMySubmissions(userId: String): List<Submission> {
+        return firestoreService.getMySubmissions(userId)
     }
 }
 

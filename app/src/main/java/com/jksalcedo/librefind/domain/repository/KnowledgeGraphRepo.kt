@@ -2,6 +2,8 @@ package com.jksalcedo.librefind.domain.repository
 
 import com.jksalcedo.librefind.domain.model.Alternative
 
+import com.jksalcedo.librefind.domain.model.Submission
+
 /**
  * Repository interface for querying the semantic knowledge graph
  * 
@@ -55,4 +57,12 @@ interface KnowledgeGraphRepo {
         category: String,
         userId: String
     ): Boolean
+
+    /**
+     * Fetches all submissions made by a specific user
+     *
+     * @param userId The user's ID
+     * @return List of Submission objects
+     */
+    suspend fun getMySubmissions(userId: String): List<Submission>
 }
